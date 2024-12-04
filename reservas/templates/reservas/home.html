@@ -8,31 +8,40 @@
      <!-- CSS do Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
 
+    <!--CSS nativo-->
+    <link rel="stylesheet" href="/reservas/templates/reservas/style.css">
+  
     <!-- JavaScript do Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" defer></script>
 
+    <!-- Link para a fonte do Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700display=swap" rel="stylesheet">
+  
+
 </head>
 <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-body mx-3" data-bs-theme="dark">
+      <div class="container-fluid d-flex justify-content-center">
+          <a class="navbar-brand" href="#">
+              <img src="/reservas/templates/imagens/top_logo.png" alt="Logo LifeFood">
+          </a>
 
-     <!--navbar-->
-     <nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
-        <nav class="navbar bg-body-tertiary">
-            <div class="container">
-              <a class="navbar-brand" href="#">
-                <img src="/reservas/templates/imagens/LifeFood.png" alt="Bootstrap" width="30" height="24">
-              </a>
-            </div>
-          </nav>
+          <!-- Botão alinhado à direita -->
+          <button class="btn btn-outline-warning ms-auto" type="button">Perfil</button>
+      </div>
     </nav>
 
-    <!--fundo-->
-    <div class="d-flex align-items-center justify-content-center text-white" style="
-        background-image: url('/reservas/templates/imagens/LifeFood.png');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        height: 100vh;
-    ">
+    <!-- Fundo -->
+    <div id="fundo" class="conteudo-fundo">
+
+        <!-- conteúdo sobre a imagem -->
+        <div>
+          <h2>Bem-vindo ao </h2>
+          <img src="/reservas/templates/imagens/logo_lifefood.png">
+        </div>
+    </div>
+
 </div>
 
 </body>

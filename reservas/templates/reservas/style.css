@@ -1,0 +1,24 @@
+body {
+    background-color: #212529; color: white;
+      overflow: hidden;
+      height: 100%;
+}
+
+#name {
+    font-family: 'great vibes';
+    font-size: larger;
+    margin-top: 9px;
+}
+
+#fundo {
+    background-image: url('/reservas/templates/imagens/home.png');
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+}
+
+.conteudo-fundo {
+    display: flex;
+    align-items: center;
+    gap: 12px;  
+}

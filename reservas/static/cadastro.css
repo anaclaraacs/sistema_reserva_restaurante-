@@ -1,0 +1,20 @@
+body {
+    background-color: rgb(240, 239, 239);
+}
+
+#logo {
+    width: 10vh;
+}
+
+.navbar-custom {
+    padding-inline: 5%;
+}
+
+.container {
+    max-width: 500px;
+    margin-top: 10px;
+    padding: 1.8%;
+    border-radius: 20px;
+    background-color: rgb(255, 255, 255);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}

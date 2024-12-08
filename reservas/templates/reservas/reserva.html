@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservas</title>
+
+    <!-- CSS do Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!--CSS nativo-->
+    <link rel="stylesheet" href="{% static 'reserva.css' %}">
+
+    <!-- JavaScript do Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" defer></script>
+
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom border-bottom border-body" data-bs-theme="light">
+        <div class="container-fluid d-flex justify-content-center">
+             <!-- Logo -->
+            <a class="navbar-brand" href="#">
+                <img id="logo" src="{% static 'imagens/LifeFood.svg' %}" alt="Logo LifeFood">
+            </a>
+
+            <!-- Botão alinhado à direita -->
+            <a href="{% url 'perfil' %}" class="btn btn-outline-warning ms-auto">
+                Perfil
+            </a>
+        </div>
+    </nav>
+
+    <div class="container mt-3">
+        <!-- Título do topo -->
+        <div class="text-center mb-4">
+            <h2 class="border-bottom border-warning pb-2">RESERVAS</h2>
+        </div>
+
+        <div class="row">
+            <!-- Coluna 1 -->
+            <div class="col-md-6">
+                <div class="p-3 border bg-light">
+                    <img id="fundo_reservas" src="{% static 'imagens/fundo_reservas.png' %}">
+                    <h3>Funcionamento: </h3>
+                    <p>Segundo à Domingo: 17h às 23h. Também funcionamos nos feriádos.</p>
+                </div>
+            </div>
+
+            <!-- Coluna 2 -->
+            <div class="col-md-6">
+                <div class="p-3 border bg-light">
+                    <h3>Faça sua reserva: </h3>
+                    <form>
+                        <!-- Mesa -->
+                        <div class="mb-3">
+                            <label for="mesa" class="form-label">Escolha sua Mesa</label>
+                            <select class="form-select" id="mesa" required>
+                                <option value="">Selecione uma mesa</option>
+                                <option value="1">Mesa 1</option>
+                                <option value="2">Mesa 2</option>
+                                <option value="3">Mesa 3</option>
+                                <option value="4">Mesa 4</option>
+                                <option value="5">Mesa 5</option>
+                            </select>
+                        </div>
+
+                        <!-- Data -->
+                        <div class="mb-3">
+                            <label for="data" class="form-label">Dia da Reserva</label>
+                            <input type="date" class="form-control" id="data" required>
+                        </div>
+
+                        <!-- Horário -->
+                        <div class="mb-3">
+                            <label for="hora" class="form-label">Horário da Reserva</label>
+                            <input type="time" class="form-control" id="hora" required>
+                        </div>
+
+                        <!-- Quantidade de Pessoas -->
+                        <div class="mb-3">
+                            <label for="pessoas" class="form-label">Quantidade de Pessoas</label>
+                            <input type="number" class="form-control" id="pessoas" min="1" required>
+                        </div>
+
+                        <!-- Botão de Enviar -->
+                        <button type="submit" class="btn btn-primary w-100">Reservar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+</html>

@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro</title>
+
+    <!-- CSS do Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!--CSS nativo-->
+    <link rel="stylesheet" href="{% static 'cadastro.css' %}">
+
+    <!-- JavaScript do Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" defer></script>
+
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom border-bottom border-body" data-bs-theme="light">
+        <div class="container-fluid d-flex justify-content-center">
+            <!-- Logo -->
+            <a class="navbar-brand" href="#">
+                <img id="logo" src="{% static 'imagens/LifeFood.svg' %}" alt="Logo LifeFood">
+            </a>
+
+            <!-- Botão alinhado à direita -->
+            <a href="{% url 'perfil' %}" class="btn btn-outline-warning ms-auto">
+                Perfil
+            </a>
+        </div>
+    </nav>
+
+        <div class="container">
+        <h2 class="text-center mb-4">Cadastro</h2>
+        <form>
+            <div class="mb-3">
+                <label for="nome" class="form-label">Nome Completo</label>
+                <input type="text" class="form-control" id="nome" placeholder="Digite seu nome completo">
+            </div>
+            <div class="mb-3">
+                <label for="telefone" class="form-label">Telefone</label>
+                <input type="text" class="form-control" id="telefone" placeholder="Digite seu telefone">
+            </div>
+            <div class="mb-3">
+                <label for="cpf" class="form-label">CPF</label>
+                <input type="text" class="form-control" id="cpf" placeholder="Digite seu CPF">
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" placeholder="Digite seu email">
+            </div>
+            <div class="mb-3">
+                <label for="senha" class="form-label">Senha</label>
+                <input type="password" class="form-control" id="senha" placeholder="Digite sua senha">
+            </div>
+            <button type="submit" class="btn btn-outline-primary">Cadastrar</button>
+        </form>
+    </div>
+    
+</body>
+</html>

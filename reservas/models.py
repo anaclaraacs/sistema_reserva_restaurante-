@@ -42,11 +42,10 @@ class Reserva(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     mesa = models.ForeignKey(Mesa, on_delete=models.CASCADE)
     data_hora = models.DateTimeField()
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='PENDENTE')  # Campo de status
-    observacoes = models.TextField(blank=True, null=True)  # Campo opcional para observações
-
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='PENDENTE')  
+    
     def clean(self):
-        # Validação para evitar reservas duplicadas para a mesma mesa no mesmo horário
+         #evitar reservas duplicadas para a mesma mesa no mesmo horário
         if Reserva.objects.filter(mesa=self.mesa, data_hora=self.data_hora).exclude(pk=self.pk).exists():
             raise ValidationError('Esta mesa já está reservada para o horário selecionado.')
 

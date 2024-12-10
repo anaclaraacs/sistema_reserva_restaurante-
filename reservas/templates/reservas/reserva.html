@@ -54,7 +54,9 @@
             <div class="col-md-6">
                 <div class="p-3 border bg-light">
                     <h3>Faça sua reserva: </h3>
-                    <form>
+                     <form method="POST"action="{% url 'fazer_reserva' %}">
+                        {% csrf_token %}
+                    
                         <!-- Mesa -->
                         <div class="mb-3">
                             <label for="mesa" class="form-label">Escolha sua Mesa</label>
@@ -71,23 +73,23 @@
                         <!-- Data -->
                         <div class="mb-3">
                             <label for="data" class="form-label">Dia da Reserva</label>
-                            <input type="date" class="form-control" id="data" required>
+                            <input type="date" class="form-control" id="data" name="data" required>
                         </div>
 
                         <!-- Horário -->
                         <div class="mb-3">
                             <label for="hora" class="form-label">Horário da Reserva</label>
-                            <input type="time" class="form-control" id="hora" required>
+                            <input type="time" class="form-control" id="hora" name="hora" required>
                         </div>
 
                         <!-- Quantidade de Pessoas -->
                         <div class="mb-3">
                             <label for="pessoas" class="form-label">Quantidade de Pessoas</label>
-                            <input type="number" class="form-control" id="pessoas" min="1" required>
+                            <input type="number" class="form-control" id="pessoas" name="pessoas" min="1" required>
                         </div>
 
                         <!-- Botão de Enviar -->
-                        <button type="submit" class="btn btn-primary w-100">Reservar</button>
+                        <button  type="submit" class="btn btn-primary w-100">Reservar</button>
                     </form>
                 </div>
             </div>
@@ -98,3 +100,5 @@
 </body>
 
 </html>
+
+<!--href="{% url 'fazer_reserva' %}"-->

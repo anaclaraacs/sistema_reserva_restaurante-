@@ -16,10 +16,10 @@ class Cliente(models.Model):
     nome = models.CharField(max_length=100)
     cpf = models.CharField(max_length=14, validators=[validar_cpf])
     telefone = models.CharField(max_length=14)
-
-    def __str__(self):  # retorna o nome do cliente como uma string
+    email = models.EmailField(max_length=255, unique=True)
+    
+    def __str__(self):  # Retorna o nome do cliente como uma string
         return self.nome
-
 
 # Modelo Mesa
 class Mesa(models.Model):

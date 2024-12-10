@@ -25,4 +25,5 @@ urlpatterns = [
     path('perfil/', views.perfil_view, name='perfil'),
     path('login/', views.login_view, name='login'),
     path('cadastro/', views.cadastro_view, name='cadastro'),
+    path('fazer_reserva/', views.fazer_reserva, name='fazer_reserva'),
 ]

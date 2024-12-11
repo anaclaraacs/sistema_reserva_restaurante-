@@ -1,25 +1,26 @@
 from django.db import models
 from django.forms import ValidationError
-from validate_docbr import CPF
 from datetime import datetime
-
-
-# Função para validar CPF
-def validar_cpf(value):
-    cpf = CPF()
-    if not cpf.validate(value):
-        raise ValidationError('CPF inválido')
+from django.contrib.auth.hashers import make_password, check_password
 
 
 # Modelo Cliente
 class Cliente(models.Model):
     nome = models.CharField(max_length=100)
-    cpf = models.CharField(max_length=14, validators=[validar_cpf])
     telefone = models.CharField(max_length=14)
+    email = models.EmailField(max_length=255, unique=True)
+    senha = models.CharField(max_length=255)
 
-    def __str__(self):  # retorna o nome do cliente como uma string
+    def set_senha(self, senha):
+        # Criptografa a senha antes de salvar
+        self.senha = make_password(senha)
+
+    def verificar_senha(self, senha):
+        return check_password(senha, self.senha)
+
+
+    def __str__(self):  # Retorna o nome do cliente como uma string
         return self.nome
-
 
 # Modelo Mesa
 class Mesa(models.Model):

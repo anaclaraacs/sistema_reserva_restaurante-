@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,6 +17,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" defer></script>
 
 </head>
+
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-custom border-bottom border-body" data-bs-theme="light">
@@ -32,32 +34,88 @@
         </div>
     </nav>
 
-        <div class="container">
+    <div class="container">
         <h2 class="text-center mb-4">Cadastro</h2>
-        <form>
+        <form method="POST" action="{% url 'cadastro' %}">
+            {% csrf_token %}
             <div class="mb-3">
                 <label for="nome" class="form-label">Nome Completo</label>
-                <input type="text" class="form-control" id="nome" placeholder="Digite seu nome completo">
+                <input name="nome" type="text" class="form-control 
+                {% if form.nome.errors %}
+                    is-invalid
+                {% endif %}" id="nome" placeholder="Digite seu nome completo" value="{{ form.nome.value|default:'' }}">
+                {% if form.nome.errors %}
+                    <div class="erro-nome">
+                        {% for error in form.nome.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
+        
             <div class="mb-3">
                 <label for="telefone" class="form-label">Telefone</label>
-                <input type="text" class="form-control" id="telefone" placeholder="Digite seu telefone">
+                <input name="telefone" type="text" class="form-control 
+                {% if form.telefone.errors %}
+                    is-invalid
+                {% endif %}" id="Telefone" placeholder="Digite seu telefone" value="{{ form.telefone.value|default:'' }}">
+                {% if form.telefone.errors %}
+                    <div class="erro-telefone">
+                        {% for error in form.telefone.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
-            <div class="mb-3">
-                <label for="cpf" class="form-label">CPF</label>
-                <input type="text" class="form-control" id="cpf" placeholder="Digite seu CPF">
-            </div>
+        
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" placeholder="Digite seu email">
+                <input name="email" type="email" class="form-control 
+
+                {% if form.email.errors %}
+                    is-invalid
+                {% endif %}" 
+                
+                id="email" placeholder="Digite seu email" value="{{ form.email.value|default:'' }}">
+                {% if form.email.errors %}
+                    <div class="erro-email">
+                        {% for error in form.email.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
+        
             <div class="mb-3">
                 <label for="senha" class="form-label">Senha</label>
-                <input type="password" class="form-control" id="senha" placeholder="Digite sua senha">
+                <input name="senha" type="password" class="form-control 
+
+                {% if form.senha.errors %}
+                    is-invalid
+                {% endif %}" 
+
+                id="senha" placeholder="Digite sua senha">
+                {% if form.senha.errors %}
+                    <div class="erro-senha">
+                        {% for error in form.senha.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
+        
+            <!-- Exibição de mensagens de sucesso ou erro (caso haja) -->
+            {% if messages %}
+                    {% for message in messages %}
+                        <p class="message {{ message.tags }}">{{ message|safe }}</p>
+                    {% endfor %}
+            {% endif %}
+        
             <button type="submit" class="btn btn-outline-primary">Cadastrar</button>
         </form>
     </div>
-    
+
 </body>
+
 </html>
+

@@ -6,7 +6,6 @@ from .models import Mesa, Cliente, Reserva
 from datetime import datetime
 from django.core.exceptions import ValidationError
 from .forms import Cadastro, Login
-from django.utils.safestring import mark_safe
 
 def home(request):
     return render(request, 'reservas/home.html') 
@@ -45,20 +44,17 @@ def login(request):
 def cadastro(request):
     if request.method == 'POST':
         form = Cadastro(request.POST)
+        
         if form.is_valid():
-            email = form.cleaned_data['email']
-            # Verifique se o email já está cadastrado
-            if Cliente.objects.filter(email=email).exists():
-                messages.error(request, "Você já está cadastrado, acesse a página de login. <a href='{% url 'login' %}'> aqui </a>.")
-            else:
-                form.save()  # Salva o novo cliente
-                messages.success(request, mark_safe(f"Cadastro realizado com sucesso! Faça login <a href='{reverse('login')}'>aqui</a>."))
-                return redirect('cadastro')
+            # Se o formulário for válido, salva o novo cliente
+            form.save()
+            login_url = reverse('login')
+            messages.success(request, f"Cadastro realizado com sucesso! Faça login. <a href='{login_url}'>Clique aqui</a>.")
+            return redirect('cadastro')
     else:
         form = Cadastro()
 
     return render(request, 'reservas/cadastro.html', {'form': form})
-
 
 def fazer_reserva(request):
     # Verifica se o cliente está logado

@@ -1,11 +1,12 @@
-from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib import messages
+from django.urls import reverse
 from .models import Mesa, Cliente, Reserva
 from datetime import datetime
 from django.core.exceptions import ValidationError
-from .forms import FormEmail
+from .forms import Cadastro, Login
+from django.utils.safestring import mark_safe
 
 def home(request):
     return render(request, 'reservas/home.html') 
@@ -16,28 +17,47 @@ def reserva(request):
 def perfil(request):
     return render(request, 'reservas/perfil.html')
 
+
 def login(request):
-    return render(request, 'reservas/login.html')
+    if request.method == 'POST':
+        form = Login(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            senha = form.cleaned_data['senha']
+            try:
+                
+                #verificar sequencia de messegens, estão acumulando ao fazer login e exibindo no cadastro
+                cliente = Cliente.objects.get(email=email)
+                if cliente.verificar_senha(senha):
+                    request.session['cliente_id'] = cliente.id  # Salva o ID na sessão
+                    messages.success(request, f"Bem-vindo, {cliente.nome}!")
+                    return redirect('perfil')  # Redireciona para a página de perfil
+                else:
+                    messages.error(request, "Senha incorreta.")
+            except Cliente.DoesNotExist:
+                messages.error(request, "Email não encontrado.")
+    else:
+        form = Login()  # Cria o formulário vazio para o método GET
+
+    return render(request, 'reservas/login.html', {'form': form})
+
 
 def cadastro(request):
     if request.method == 'POST':
-        form = FormEmail(request.POST) #altera a autenticação nativa do python para email
+        form = Cadastro(request.POST)
         if form.is_valid():
-            email = form.cleaned_data['username'] 
-            password = form.cleaned_data['password'] #aqui ele vai verificar a senha dentro dos dados que ja foram validados
-            user = authenticate(request, username=email, password=password) #A funçaõ verifica se possui esses dados 
-            #Aqui vai verificar se o usuaru
-            if user is not None: 
-                login(request, user)
-                return redirect('perfil')  # Redireciona para a página principal após o login
+            email = form.cleaned_data['email']
+            # Verifique se o email já está cadastrado
+            if Cliente.objects.filter(email=email).exists():
+                messages.error(request, "Você já está cadastrado, acesse a página de login. <a href='{% url 'login' %}'> aqui </a>.")
             else:
-                form.add_error(None, 'Credenciais inválidas')
+                form.save()  # Salva o novo cliente
+                messages.success(request, mark_safe(f"Cadastro realizado com sucesso! Faça login <a href='{reverse('login')}'>aqui</a>."))
+                return redirect('cadastro')
     else:
-        form = EmailAuthenticationForm()
+        form = Cadastro()
 
-    return render(request, 'login.html', {'form': form})
-
-    return render(request, 'reservas/cadastro.html')
+    return render(request, 'reservas/cadastro.html', {'form': form})
 
 
 def fazer_reserva(request):

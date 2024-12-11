@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,6 +17,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" defer></script>
 
 </head>
+
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-custom border-bottom border-body" data-bs-theme="light">
@@ -32,32 +34,37 @@
         </div>
     </nav>
 
-        <div class="container">
+    <div class="container">
         <h2 class="text-center mb-4">Cadastro</h2>
-        <form>
+        <form method="POST" action="{% url 'cadastro' %}">
+            {% csrf_token %}
             <div class="mb-3">
                 <label for="nome" class="form-label">Nome Completo</label>
-                <input type="text" class="form-control" id="nome" placeholder="Digite seu nome completo">
+                <input name="nome" type="text" class="form-control" id="nome" placeholder="Digite seu nome completo">
             </div>
             <div class="mb-3">
                 <label for="telefone" class="form-label">Telefone</label>
-                <input type="text" class="form-control" id="telefone" placeholder="Digite seu telefone">
-            </div>
-            <div class="mb-3">
-                <label for="cpf" class="form-label">CPF</label>
-                <input type="text" class="form-control" id="cpf" placeholder="Digite seu CPF">
+                <input name="telefone" type="text" class="form-control" id="telefone" placeholder="Digite seu telefone">
             </div>
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" placeholder="Digite seu email">
+                <input name="email" type="email" class="form-control" id="email" placeholder="Digite seu email">
             </div>
             <div class="mb-3">
                 <label for="senha" class="form-label">Senha</label>
-                <input type="password" class="form-control" id="senha" placeholder="Digite sua senha">
+                <input name="senha" type="password" class="form-control" id="senha" placeholder="Digite sua senha">
             </div>
+
+            {% for message in messages %}
+                <p style="color: red;">{{ message }}</p>
+            {% endfor %}
+
             <button type="submit" class="btn btn-outline-primary">Cadastrar</button>
         </form>
+
     </div>
-    
+
 </body>
+
 </html>
+

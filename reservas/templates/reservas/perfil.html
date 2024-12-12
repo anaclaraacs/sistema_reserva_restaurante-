@@ -28,18 +28,19 @@
                 </a>
         </nav>
 
-        <h2>Olá, Nome do cliente!</h2>
+        <h2>Olá, {{ cliente.nome }}!</h2>
 
         <!-- Informações do Cliente -->
         <div class="infos">
             <h4>Informações Pessoais</h4>
-            <p><strong>Nome:</strong> NomeCliente</p>
-            <p><strong>Email:</strong> emailcliente@email.com</p>
-            <p><strong>Telefone:</strong> (00) 00000-0000</p>
-            <p><strong>CPF:</strong> 000.000.000-00</p>
+            <p><strong>Nome:</strong>{{ cliente.nome }}</p>
+            <p><strong>Email:</strong> {{ cliente.email }}</p>
+            <p><strong>Telefone:</strong> {{ cliente.telefone }}</p>
+            <!--<p><strong>CPF:</strong> {{ cliente.cpf }}</p>
         </div>
-
+            
         <!-- Reservas do Cliente -->
+        </div>
         <h4>Suas Reservas</h4>
         <table class="reservas-table">
             <thead>
@@ -51,26 +52,24 @@
                 </tr>
             </thead>
             <tbody>
+                {% for reserva in cliente.reserva_set.all %}
                 <tr>
-                    <td>1</td>
-                    <td>15/12/2024</td>
-                    <td>19:00</td>
-                    <td><span class="badge bg-success">Confirmada</span></td>
+                    <td>{{ forloop.counter }}1</td>
+                    <td>{{ reserva.data_hora|date:"d/m/Y" }}4</td>
+                    <td>19:{{ reserva.data_hora|time:"H:i" }}</td>
+                    <td>
+                        <span class="badge 
+                        {% if reserva.status == 'CONFIRMADA' %}bg-success
+                        {% elif reserva.status == 'PENDENTE' %}bg-warning
+                        {% else %}bg-danger{% endif %}">
+                        {{ reserva.status }}
+                        </span>
+                    </td>
                 </tr>
-                <tr>
-                    <td>2</td>
-                    <td>20/12/2024</td>
-                    <td>20:30</td>
-                    <td><span class="badge bg-warning">Pendente</span></td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>25/12/2024</td>
-                    <td>18:00</td>
-                    <td><span class="badge bg-danger">Cancelada</span></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 </body>
+</html>
 </html>

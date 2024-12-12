@@ -11,3 +11,4 @@ urlpatterns = [
     path('cadastro/', views.cadastro, name='cadastro'),
     path('fazer_reserva/', views.perfil, name='fazer_reserva'),
 ]
+

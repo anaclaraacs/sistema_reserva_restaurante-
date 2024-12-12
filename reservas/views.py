@@ -6,6 +6,7 @@ from .models import Mesa, Cliente, Reserva
 from datetime import datetime
 from django.core.exceptions import ValidationError
 from .forms import Cadastro, Login
+from .pubsub.producer import publicar_reserva
 
 def home(request):
     return render(request, 'reservas/home.html') 
@@ -71,6 +72,7 @@ def fazer_reserva(request):
     # Se for um POST (formulário enviado)
     if request.method == 'POST':
         # Obtém os dados do formulário
+        id_reserva = request.POST.get('id_reserva')
         mesa_id = request.POST.get('mesa')
         data_reserva = request.POST.get('data')
         hora_reserva = request.POST.get('hora')
@@ -104,5 +106,19 @@ def fazer_reserva(request):
         mesa.ocupada = True
         mesa.save()
 
+        # Publica o evento no Kafka
+        event_data = {
+            "id": reserva.id_reserva,
+            "cliente_email": reserva.email_cliente,
+            "mesa": reserva.mesa, 
+            "data_hora": reserva.data_hora.strftime("%Y-%m-%d %H:%M"),
+            "quantidade_pessoas": quantidade_pessoas,
+            "status": reserva.status
+        }
+        publicar_reserva("criar-reserva", event_data)  # Publica no tópico Kafka
+
+        # Mensagem de sucesso
+        messages.success(request, "Reserva criada com sucesso! Você será notificado por e-mail.")
+        
         # Redireciona para o perfil do cliente após a reserva
         return redirect('perfil')  # Substitua 'perfil' pela URL correspondente à página de perfil

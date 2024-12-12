@@ -15,7 +15,18 @@ def reserva(request):
     return render(request, 'reservas/reserva.html')
 
 def perfil(request):
-    return render(request, 'reservas/perfil.html')
+    # Verifica se o cliente está logado
+    cliente_id = request.session.get('cliente_id')
+    if not cliente_id:
+        return redirect('login')  # Redireciona para a página de login caso o cliente não esteja logado
+
+    # Busca o cliente logado
+    try:
+        cliente = Cliente.objects.get(id=cliente_id)
+    except Cliente.DoesNotExist:
+        return HttpResponse("Cliente não encontrado.")
+    
+    return render(request, 'reservas/perfil.html', {'cliente': cliente})
 
 
 def login(request):
@@ -121,4 +132,4 @@ def fazer_reserva(request):
         messages.success(request, "Reserva criada com sucesso! Você será notificado por e-mail.")
         
         # Redireciona para o perfil do cliente após a reserva
-        return redirect('perfil')  # Substitua 'perfil' pela URL correspondente à página de perfil
+        return redirect('login')  # Substitua 'perfil' pela URL correspondente à página de perfil

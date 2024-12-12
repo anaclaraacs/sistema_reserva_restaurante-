@@ -1,3 +1,4 @@
+
 # Ignorar arquivos compilados de Python
 *.pyc
 __pycache__/
@@ -8,3 +9,4 @@ db.sqlite3
 # Ignorar arquivos de ambiente virtual
 venv/
 .env/
+>>>>>>> 2797c3a4d27cc4878879d9336b030e7cde5cbabb

@@ -2,6 +2,7 @@ from django.db import models
 from django.forms import ValidationError
 from datetime import datetime
 from django.contrib.auth.hashers import make_password, check_password
+import uuid
 
 
 # Modelo Cliente
@@ -33,6 +34,8 @@ class Mesa(models.Model):
 
 
 # Modelo Reserva
+
+
 class Reserva(models.Model):
     STATUS_CHOICES = [
         ('PENDENTE', 'Pendente'),
@@ -40,22 +43,23 @@ class Reserva(models.Model):
         ('CANCELADA', 'Cancelada'),
     ]
 
+    id_reserva = models.CharField(max_length=36, unique=True, default=uuid.uuid4, editable=False)
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     mesa = models.ForeignKey(Mesa, on_delete=models.CASCADE)
     data_hora = models.DateTimeField()
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='PENDENTE')  
-    
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='PENDENTE')
+    email_cliente = models.EmailField(max_length=255, editable=False) 
+    capacidade = models.IntegerField()
+
     def clean(self):
-         #evitar reservas duplicadas para a mesma mesa no mesmo horário
         if Reserva.objects.filter(mesa=self.mesa, data_hora=self.data_hora).exclude(pk=self.pk).exists():
             raise ValidationError('Esta mesa já está reservada para o horário selecionado.')
-
-        # Validação para garantir que a reserva seja feita para uma data futura
         if self.data_hora <= datetime.now():
             raise ValidationError('A data e hora da reserva devem ser futuras.')
+        self.email_cliente = self.cliente.email
+        self.capacidade = self.mesa.capacidade
 
     def save(self, *args, **kwargs):
-        # Atualiza o status de ocupada da mesa ao confirmar a reserva
         if self.status == 'CONFIRMADA':
             self.mesa.ocupada = True
             self.mesa.save()
@@ -66,4 +70,4 @@ class Reserva(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"Reserva de {self.cliente.nome} para a Mesa {self.mesa.numero} em {self.data_hora.strftime('%d/%m/%Y %H:%M')} - Status: {self.status}"
+        return f"Reserva {self.id_reserva} de {self.cliente.nome} para a Mesa {self.mesa.numero} em {self.data_hora.strftime('%d/%m/%Y %H:%M')} - Status: {self.status}"

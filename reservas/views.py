@@ -13,10 +13,10 @@ def reserva(request):
     return render(request, 'reservas/reserva.html')
 
 def perfil(request):
-    # Verifica se o cliente está logado
-    cliente_id = request.session.get('cliente_id')
+    # Verificar o cliente logado 
+    cliente_id = request.session.get('cliente_id')  # Verifica o cliente na sessão
     if not cliente_id:
-        return redirect('login')  # Redireciona para a página de login caso o cliente não esteja logado
+        return redirect('login')  # Se não houver cliente_id, redireciona para login
 
     # Busca o cliente logado
     try:
@@ -31,13 +31,16 @@ def login(request):
     if request.method == 'POST':
         form = Login(request.POST)
         if form.is_valid():
-            return redirect('perfil')
+            cliente = form.cliente  # O cliente é atribuído no método clean_email
+            request.session['cliente_id'] = cliente.id  # Armazena o cliente_id na sessão
+            return redirect('perfil')  # Redireciona para o perfil após o login bem-sucedido
         else:
-        # Caso o formulário não seja válido, exibe as mensagens de erro
+            # Caso o formulário não seja válido, exibe as mensagens de erro
             for error in form.errors.values():
                 messages.error(request, error)
     else:
         form = Login()  
+
     return render(request, 'reservas/login.html', {'form': form})
 
 def cadastro(request):
@@ -63,44 +66,46 @@ from .models import Mesa, Cliente, Reserva
 @login_required
 def fazer_reserva(request):
     if request.method == 'POST':
-        mesa_numero = request.POST.get('mesa_numero')
-        mesa_capacidade = request.POST.get('pessoas')
-        data = request.POST.get('data')
-        hora = request.POST.get('hora')
-        pessoas = request.POST.get('pessoas')
-
-        # Captura o email diretamente do objeto request.user, se o usuário estiver logado
-        email_cliente = request.user.email  # Usando o email do usuário autenticado
-        
-        if not email_cliente:
-            return HttpResponse("Você precisa estar logado para fazer uma reserva.", status=403)
+        # Verificar se o cliente está logado
+        cliente_id = request.session.get('cliente_id')
+        if not cliente_id:
+            return redirect(reverse('login'))  # Redirecionar para o login se o cliente não estiver logado
 
         try:
-            cliente = Cliente.objects.get(email=email_cliente)
+            cliente = Cliente.objects.get(id=cliente_id)
         except Cliente.DoesNotExist:
-            return HttpResponse("Cliente não encontrado!", status=404)
+            return HttpResponse("Cliente não encontrado.")
+        
+        # Coletar os dados do formulário
+        mesa_id = request.POST.get('mesa')
+        pessoas = request.POST.get('pessoas')
+        data = request.POST.get('data')
+        hora = request.POST.get('hora')
 
-        mesa, created = Mesa.objects.get_or_create(
-            numero=mesa_numero,
-            defaults={'capacidade': mesa_capacidade, 'ocupada': False}
-        )
-
-        reserva = Reserva.objects.create(
+        # Obter a mesa selecionada
+        try:
+            mesa = Mesa.objects.get(id=mesa_id)
+        except Mesa.DoesNotExist:
+            return HttpResponse("Mesa não encontrada.")
+        
+        # Criar a reserva
+        reserva = Reserva(
             cliente=cliente,
             mesa=mesa,
             data=data,
             hora=hora,
             pessoas=pessoas,
-            capacidade=mesa.capacidade,
-            email_cliente=cliente.email,
         )
-
-        mesa.ocupada = True
-        mesa.save()
-
-        return HttpResponse(f"Reserva criada com sucesso: {reserva.id_reserva}")
-
-    return render(request, 'reservas/reserva.html')
+        
+        # Validar a reserva
+        try:
+            reserva.full_clean()  # Executa as validações no modelo
+            reserva.save()  # Salva a reserva no banco de dados
+            return redirect('perfil')  # Redireciona para o perfil após salvar a reserva
+        except ValidationError as e:
+            return render(request, 'reservas/reserva_form.html', {'form': reserva, 'errors': e.messages})
+    else:
+        return render(request, 'reservas/reserva_form.html')
 
     
     

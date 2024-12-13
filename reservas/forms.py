@@ -57,21 +57,29 @@ class Login(forms.Form):
             cliente = Cliente.objects.get(email=email)
         except Cliente.DoesNotExist:
             raise forms.ValidationError('Email não encontrado.')
-        
+
         # Armazenar o cliente para usar na validação da senha
         self.cliente = cliente
-        
+
         return email
     
     def clean_senha(self):
         senha = self.cleaned_data.get('senha')
+        cliente = self.cleaned_data.get('cliente')  # Obter o cliente de cleaned_data
         
-        # Verifica se a senha é válida
-        if self.cliente:
-            if not self.cliente.verificar_senha(senha):
-                raise forms.ValidationError('Senha incorreta.')
+        if cliente and not cliente.verificar_senha(senha):
+            raise forms.ValidationError('Senha incorreta.')
         
         return senha
+    
+class ReservaForm(forms.ModelForm):
+    class Meta:
+        model = Reserva
+        fields = ['mesa', 'pessoas', 'data', 'hora']
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['mesa'].queryset = Mesa.objects.all()  # Limita as opções de mesas disponíveis
     
     # email = forms.EmailField(max_length=255)
     # senha = forms.CharField(widget=forms.PasswordInput)

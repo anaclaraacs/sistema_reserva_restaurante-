@@ -44,18 +44,34 @@
                 <!-- Campo de E-mail -->
                 <div class="form-group mb-3">
                     <label for="email" class="form-label">E-mail</label>
-                    <input name="email" type="email" class="form-control" id="email" placeholder="Digite seu e-mail" required>
+                    <input name="email" type="email" class="form-control 
+                    {% if form.nome.errors %}
+                        is-invalid
+                    {% endif %}" id="nome" placeholder="Digite seu nome completo" value="{{ form.nome.value|default:'' }}">
+                    {% if form.email.errors %}
+                        <div class="erro-email">
+                            {% for error in form.email.errors %}
+                                <p class="text-erro">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
 
                 <!-- Campo de Senha -->
                 <div class="form-group mb-3">
                     <label for="senha" class="form-label">Senha</label>
-                    <input name="senha" type="password" class="form-control" id="senha" placeholder="Digite sua senha" required>
+                    <input name="senha" type="password" class="form-control 
+                    {% if form.nome.errors %}
+                        is-invalid
+                    {% endif %}" id="nome" placeholder="Digite seu nome completo" value="{{ form.nome.value|default:'' }}">
+                    {% if form.senha.errors %}
+                        <div class="text-erro">
+                            {% for error in form.senha.errors %}
+                                <p class="erro">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
-
-                {% if error %}
-                    <p style="color: red;">{{ error }}</p>
-                {% endif %}
 
                 <!-- Botão de Login -->
                 <button type="submit" class="btn btn-custom">Entrar</button>

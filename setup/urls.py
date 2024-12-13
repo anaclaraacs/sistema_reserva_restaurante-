@@ -9,6 +9,6 @@ urlpatterns = [
     path('perfil/', views.perfil, name='perfil'),
     path('login/', views.login, name='login'),
     path('cadastro/', views.cadastro, name='cadastro'),
-    path('fazer_reserva/', views.perfil, name='fazer_reserva'),
+    path('fazer_reserva/', views.fazer_reserva, name='fazer_reserva'),
 ]
 

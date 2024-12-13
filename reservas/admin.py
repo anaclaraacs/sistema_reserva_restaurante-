@@ -22,6 +22,6 @@ class MesaAdmin(admin.ModelAdmin):
 
 @admin.register(Reserva)
 class ReservaAdmin(admin.ModelAdmin):
-    list_display = ('cliente', 'mesa', 'data_hora', 'status')  
-    list_filter = ('status', 'data_hora')  
+    list_display = ('cliente', 'mesa', 'data', 'hora', 'status')  
+    list_filter = ('status', 'data', 'hora')  
     search_fields = ('cliente__nome', 'mesa__numero')  

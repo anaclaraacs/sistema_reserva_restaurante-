@@ -54,7 +54,7 @@
             <div class="col-md-6">
                 <div class="p-3 border bg-light">
                     <h3>Faça sua reserva: </h3>
-                    <form method="POST" action="{% url 'fazer_reserva' %}">
+                    <form action="{% url 'fazer_reserva' %}" method="post">
                         {% csrf_token %}
                         
                         <!-- Mesa -->
@@ -97,7 +97,7 @@
                             {% endif %}
                         </div>
 
-                        <!-- Hora -->
+                        
                         <div class="mb-3">
                             <label for="hora" class="form-label">Hora da Reserva</label>
                             <input type="time" class="form-control" id="hora" name="hora" required>

@@ -46,28 +46,36 @@ class Reserva(models.Model):
     id_reserva = models.CharField(max_length=36, unique=True, default=uuid.uuid4, editable=False)
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     mesa = models.ForeignKey(Mesa, on_delete=models.CASCADE)
-    data_hora = models.DateTimeField()
+    data = models.DateField()  
+    hora = models.TimeField()  #
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='PENDENTE')
     email_cliente = models.EmailField(max_length=255, editable=False) 
     capacidade = models.IntegerField()
+    pessoas = models.IntegerField()
 
     def clean(self):
-        if Reserva.objects.filter(mesa=self.mesa, data_hora=self.data_hora).exclude(pk=self.pk).exists():
+        # Combinar data e hora apenas para validação
+        data_hora_reserva = datetime.combine(self.data, self.hora)
+        
+        # Verificar conflitos de reserva
+        if Reserva.objects.filter(
+            mesa=self.mesa,
+            data=self.data,
+            hora=self.hora
+        ).exclude(pk=self.pk).exists():
             raise ValidationError('Esta mesa já está reservada para o horário selecionado.')
-        if self.data_hora <= datetime.now():
+
+        # Validar se a data e hora são futuras
+        if data_hora_reserva <= datetime.now():
             raise ValidationError('A data e hora da reserva devem ser futuras.')
-        self.email_cliente = self.cliente.email
-        self.capacidade = self.mesa.capacidade
 
-    def save(self, *args, **kwargs):
-        if self.status == 'CONFIRMADA':
-            self.mesa.ocupada = True
-            self.mesa.save()
-        elif self.status == 'CANCELADA':
-            self.mesa.ocupada = False
-            self.mesa.save()
+        # Configurar valores adicionais
+        if hasattr(self.cliente, 'email'):
+            self.email_cliente = self.cliente.email  # Adiciona o email do cliente se existir
+        self.capacidade = self.mesa.capacidade  # Define a capacidade da mesa
 
-        super().save(*args, **kwargs)
+    def __str__(self):
+        return f"Reserva para {self.pessoas} pessoa(s) na Mesa {self.mesa} em {self.data} às {self.hora}"
 
     def __str__(self):
         return f"Reserva {self.id_reserva} de {self.cliente.nome} para a Mesa {self.mesa.numero} em {self.data_hora.strftime('%d/%m/%Y %H:%M')} - Status: {self.status}"

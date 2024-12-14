@@ -37,6 +37,11 @@
             <p><strong>Telefone:</strong> {{ cliente.telefone|default:"Não encontrado" }}</p>
             <!--<p><strong>CPF:</strong> {{ cliente.cpf }}</p>-->
         </div>
+
+        <!-- Botão Fazer Reserva -->
+        <div class="text-center my-4">
+            <a href="{% url 'fazer_reserva' %}" class="btn btn-primary">Fazer Reserva</a>
+        </div>
             
         <!-- Reservas do Cliente -->
         <h4>Suas Reservas</h4>

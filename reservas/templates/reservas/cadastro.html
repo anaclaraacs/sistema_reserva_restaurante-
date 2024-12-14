@@ -28,7 +28,7 @@
             </a>
 
             <!-- Botão alinhado à direita -->
-            <a href="{% url 'perfil' %}" class="btn btn-outline-warning ms-auto">
+            <a href="{% url 'login' %}" class="btn btn-outline-warning ms-auto">
                 Perfil
             </a>
         </div>
@@ -40,7 +40,8 @@
             {% csrf_token %}
             <div class="mb-3">
                 <label for="nome" class="form-label">Nome Completo</label>
-                <input name="nome" type="text" class="form-control 
+                <input name="nome" type="text" class
+                ="form-control 
                 {% if form.nome.errors %}
                     is-invalid
                 {% endif %}" id="nome" placeholder="Digite seu nome completo" value="{{ form.nome.value|default:'' }}">

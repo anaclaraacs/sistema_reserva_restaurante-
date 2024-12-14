@@ -1,16 +1,17 @@
-from django.shortcuts import render, redirect,  get_object_or_404
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib import messages
 from django.urls import reverse
 from .models import Cliente, Reserva, Mesa
 from .forms import Cadastro, Login
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ValidationError
 
 def home(request):
     return render(request, 'reservas/home.html') 
 
-def reserva(request):
-    return render(request, 'reservas/reserva.html')
+# def reserva(request):
+#     return render(request, 'reservas/reserva.html')
 
 def perfil(request):
     # Verificar o cliente logado 
@@ -50,20 +51,18 @@ def cadastro(request):
         if form.is_valid():
             # Se o formulário for válido, salva o novo cliente
             form.save()
-            login_url = reverse('login')
+            login_url = reverse('login')  # Obtem a URL correta para o login
             messages.success(request, f"Cadastro realizado com sucesso! Faça login. <a href='{login_url}'>Clique aqui</a>.")
-            return redirect('cadastro')
+ 
+            #login_url = reverse('login')
+            #messages.success(request, f"Cadastro realizado com sucesso! Faça login. <a href='{login}'>Clique aqui</a>.")
+            #return redirect('cadastro')
     else:
         form = Cadastro()
 
     return render(request, 'reservas/cadastro.html', {'form': form})
 
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required
-from .models import Mesa, Cliente, Reserva
-
-@login_required
+#@login_required
 def fazer_reserva(request):
     if request.method == 'POST':
         # Verificar se o cliente está logado
@@ -100,12 +99,13 @@ def fazer_reserva(request):
         # Validar a reserva
         try:
             reserva.full_clean()  # Executa as validações no modelo
-            reserva.save()  # Salva a reserva no banco de dados
+            reserva.save()
+            print('Reserva salva com sucesso.')  # Salva a reserva no banco de dados
             return redirect('perfil')  # Redireciona para o perfil após salvar a reserva
         except ValidationError as e:
-            return render(request, 'reservas/reserva_form.html', {'form': reserva, 'errors': e.messages})
+            return render(request, 'reservas/perfil.html', {'form': reserva, 'errors': e.message_dict})
     else:
-        return render(request, 'reservas/reserva_form.html')
+        return render(request, 'reservas/reserva.html')
 
     
     

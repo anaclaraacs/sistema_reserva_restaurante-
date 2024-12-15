@@ -1,9 +1,6 @@
 from django import forms
-from .models import Cliente, Mesa, Reserva
+from .models import Cliente
 import re
-from django.core.exceptions import ValidationError
-from datetime import datetime
-from django.utils import timezone
 
 class Cadastro(forms.ModelForm):
     senha = forms.CharField(widget=forms.PasswordInput, max_length=255)
@@ -71,45 +68,3 @@ class Login(forms.Form):
             raise forms.ValidationError('Senha incorreta.')
         
         return senha
-    
-class ReservaForm(forms.ModelForm):
-    class Meta:
-        model = Reserva
-        fields = ['mesa', 'pessoas', 'data', 'hora']
-    
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['mesa'].queryset = Mesa.objects.all()  # Limita as opções de mesas disponíveis
-    
-    # email = forms.EmailField(max_length=255)
-    # senha = forms.CharField(widget=forms.PasswordInput)
-    
-#class FazerReserva(forms.ModelForm):
-    # class Meta:
-    #     model = Reserva
-    #     fields = ['mesa', 'pessoas', 'data', 'hora']
-    #     widgets = {
-    #         'data': forms.DateInput(attrs={'type': 'date'}),
-    #         'hora': forms.TimeInput(attrs={'type': 'time'}),
-    #     }
-    #     error_messages = {
-    #         'mesa': {'required': 'Por favor, selecione uma mesa.'},
-    #         'pessoas': {
-    #             'required': 'Por favor, informe a quantidade de pessoas.',
-    #             'min_value': 'A quantidade mínima é 1 pessoa.',
-    #         },
-    #         'data': {'required': 'Por favor, informe a data da reserva.'},
-    #     }
-
-    # def __init__(self, *args, **kwargs):
-    #     Captura o argumento adicional mesas_choices
-    #     mesas_choices = kwargs.pop('mesas_choices', None)
-    #     super().__init__(*args, **kwargs)
-    #     if mesas_choices:
-    #         self.fields['mesa'].choices = mesas_choices
-
-    # def clean_data(self):
-    #     data = self.cleaned_data.get('data')
-    #     if data and data < date.today():
-    #         raise forms.ValidationError('A data da reserva não pode ser no passado.')
-    #     return data

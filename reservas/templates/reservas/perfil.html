@@ -49,6 +49,7 @@
             <thead>
                 <tr>
                     <th>#</th>
+                    <th>Mesa</th>
                     <th>Data</th>
                     <th>Hora</th>
                     <th>Status</th>
@@ -58,8 +59,9 @@
                 {% for reserva in cliente.reserva_set.all %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
-                    <td>{{ reserva.data_hora|date:"d/m/Y" }}</td>
-                    <td>{{ reserva.data_hora|time:"H:i" }}</td>
+                    <td>{{ reserva.mesa.numero }}</td>
+                    <td>{{ reserva.data|date:"d/m/Y" }}</td>
+                    <td>{{ reserva.hora|time:"H:i" }}</td>
                     <td>
                         <span class="badge 
                         {% if reserva.status == 'CONFIRMADA' %}bg-success
@@ -72,6 +74,27 @@
                 {% endfor %}
             </tbody>
         </table>
+
+         <!-- Excluir Reserva -->
+        <div class="my-4">
+            <h4>Excluir Reserva</h4>
+            <form method="POST" action="{% url 'excluir_reserva' %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="numero_mesa" class="form-label">Número da Mesa</label>
+                    <input type="number" class="form-control" id="numero_mesa" name="numero_mesa" required>
+                </div>
+                <button type="submit" class="btn btn-danger">Excluir Reserva</button>
+                
+                {% if form.numero_mesa.errors %}
+                <div class="alert alert-danger mt-2">
+                    {% for error in form.numero_mesa.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </form>
+        </div>
     </div>
 </body>
 </html>

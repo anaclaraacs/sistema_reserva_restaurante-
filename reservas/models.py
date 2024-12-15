@@ -20,7 +20,7 @@ class Cliente(models.Model):
         return check_password(senha, self.senha)
 
 
-    def __str__(self):  # Retorna o nome do cliente como uma string
+    def __str__(self):
         return self.nome
 
 # Modelo Mesa
@@ -78,4 +78,5 @@ class Reserva(models.Model):
         return f"Reserva para {self.pessoas} pessoa(s) na Mesa {self.mesa} em {self.data} às {self.hora}"
 
     def __str__(self):
-        return f"Reserva {self.id_reserva} de {self.cliente.nome} para a Mesa {self.mesa.numero} em {self.data_hora.strftime('%d/%m/%Y %H:%M')} - Status: {self.status}"
+        return f"Reserva {self.id_reserva} de {self.cliente.nome} para a Mesa {self.mesa.numero} em {self.data.strftime('%d/%m/%Y')} às {self.hora.strftime('%H:%M')} - Status: {self.status}"
+

@@ -6,6 +6,11 @@ from .models import Cliente, Reserva, Mesa
 from .forms import Cadastro, Login
 from django.core.exceptions import ValidationError
 
+#kafka
+from django.http import JsonResponse
+from notificador.notificador_produtor import enviar_mensagem
+#---------
+
 def home(request):
     return render(request, 'reservas/home.html') 
 
@@ -89,9 +94,26 @@ def fazer_reserva(request):
         
         # Validar a reserva
         try:
+            
             reserva.full_clean()  # Executa as validações no modelo
             reserva.save()
+            
+            #kafka-------------------------
+            
+             # Simulação de reserva criada (substitua por lógica real)
+            reserva_id = 123
+            cliente_email = "cliente@example.com"
+
+            # Enviar mensagem para o Kafka
+            enviar_mensagem(reserva_id, cliente_email)
+
+            print({"status": "Reserva criada e mensagem enviada!"})
+            
+            #-------------
+            
             return redirect('perfil')  # Redireciona para o perfil após salvar a reserva
+        
+            
         except ValidationError as e:
             return render(request, 'reservas/perfil.html', {'form': reserva, 'errors': e.message_dict})
     else:
@@ -108,3 +130,6 @@ def excluir_reserva(request):
             return HttpResponse("Reserva não encontrada para o número da mesa informado.")
     
     return redirect('reservas/perfil') 
+
+
+#kafka

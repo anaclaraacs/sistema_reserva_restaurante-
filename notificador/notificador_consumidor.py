@@ -1,27 +1,22 @@
-from confluent_kafka import Consumer
+import pika
+from time import sleep
 
-KAFKA_BROKER = "kafka:9092"
-TOPIC = "reservas"
+#sleep(10)
+RABBITMQ_HOST = "rabbitmq"
+QUEUE_NAME = "reservas"
 
-# Configuração do consumidor
-consumer_conf = {
-    'bootstrap.servers': KAFKA_BROKER,
-    'group.id': 'grupo_notificador',
-    'auto.offset.reset': 'earliest'  # Começa a consumir do início do tópico
-}
+def callback(ch, method, properties, body):
+    mensagem = body.decode("utf-8")
+    print(f"📩 Mensagem recebida: {mensagem}")
+    # Aqui você pode adicionar a lógica para enviar notificações
 
-consumer = Consumer(consumer_conf)
-consumer.subscribe([TOPIC])
+print(RABBITMQ_HOST)
+sleep(20)
+conexao = pika.BlockingConnection(pika.ConnectionParameters(host=RABBITMQ_HOST))
+canal = conexao.channel()
+canal.queue_declare(queue=QUEUE_NAME)
 
-print("🎧 Consumidor Kafka rodando...")
+print("🎧 Consumidor RabbitMQ rodando...")
+canal.basic_consume(queue=QUEUE_NAME, on_message_callback=callback, auto_ack=True)
 
-while True:
-    mensagem = consumer.poll(1.0)  # Espera 1 segundo por novas mensagens
-
-    if mensagem is None:
-        continue
-    if mensagem.error():
-        print(f"❌ Erro: {mensagem.error()}")
-        continue
-
-    print(f"📩 Mensagem recebida: {mensagem.value().decode('utf-8')}")
+canal.start_consuming()

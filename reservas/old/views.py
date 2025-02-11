@@ -104,8 +104,7 @@ def fazer_reserva(request):
             reserva_id = 123
             cliente_email = "cliente@example.com"
 
-            # Enviar mensagem para o Kafka
-            enviar_mensagem(reserva_id, cliente_email)
+            enviar_mensagem(reserva.mesa, cliente.email)
 
             print({"status": "Reserva criada e mensagem enviada!"})
             

@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil</title>
+
+    <!-- CSS do Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!--CSS nativo-->
+    <link rel="stylesheet" href="{% static 'perfil.css' %}">
+
+    <!-- JavaScript do Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-custom border-bottom border-body" data-bs-theme="light">
+            <div class="container-fluid d-flex justify-content-center">
+                <!-- Logo -->
+                <a class="navbar-brand" href="#">
+                    <img id="logo" src="{% static 'imagens/LifeFood.svg' %}" alt="Logo LifeFood">
+                </a>
+            </div>
+        </nav>
+       
+        <h2>Olá, {{ cliente.nome }}!</h2>
+
+        <!-- Informações do Cliente -->
+        <div class="infos">
+            <h4>Informações Pessoais</h4>
+            <p><strong>Nome:</strong> {{ cliente.nome|default:"Não encontrado" }}</p>
+            <p><strong>Email:</strong> {{ cliente.email|default:"Não encontrado" }}</p>
+            <p><strong>Telefone:</strong> {{ cliente.telefone|default:"Não encontrado" }}</p>
+            <!--<p><strong>CPF:</strong> {{ cliente.cpf }}</p>-->
+        </div>
+
+        <!-- Botão Fazer Reserva -->
+        <div class="text-center my-4">
+            <a href="{% url 'fazer_reserva' %}" class="btn btn-primary">Fazer Reserva</a>
+        </div>
+            
+        <!-- Reservas do Cliente -->
+        <h4>Suas Reservas</h4>
+        <table class="reservas-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Mesa</th>
+                    <th>Data</th>
+                    <th>Hora</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reserva in cliente.reserva_set.all %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ reserva.mesa.numero }}</td>
+                    <td>{{ reserva.data|date:"d/m/Y" }}</td>
+                    <td>{{ reserva.hora|time:"H:i" }}</td>
+                    <td>
+                        <span class="badge 
+                        {% if reserva.status == 'CONFIRMADA' %}bg-success
+                        {% elif reserva.status == 'PENDENTE' %}bg-warning
+                        {% else %}bg-danger{% endif %}">
+                        {{ reserva.status }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+         <!-- Excluir Reserva -->
+        <div class="my-4">
+            <h4>Excluir Reserva</h4>
+            <form method="POST" action="{% url 'excluir_reserva' %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="numero_mesa" class="form-label">Número da Mesa</label>
+                    <input type="number" class="form-control" id="numero_mesa" name="numero_mesa" required>
+                </div>
+                <button type="submit" class="btn btn-danger">Excluir Reserva</button>
+                
+                {% if form.numero_mesa.errors %}
+                <div class="alert alert-danger mt-2">
+                    {% for error in form.numero_mesa.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</body>
+</html>

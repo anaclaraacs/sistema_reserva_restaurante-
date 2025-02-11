@@ -1,0 +1,40 @@
+version: '3.7'
+services:
+  web:
+    build: ./reservas
+    container_name: web
+    ports:
+      - "8000:8000"
+    depends_on:
+      - rabbitmq
+    networks:
+      - app_network
+
+  notificador:
+    build: notificador
+    container_name: notificador
+    volumes:
+      - ./appdata:/appdata
+    depends_on:
+       - rabbitmq
+      #    condition: service_healthy
+
+    networks:
+      - app_network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"   # Porta do RabbitMQ
+      - "15672:15672" # Porta do painel de administração
+    networks:
+      - app_network
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:15672"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+networks:
+  app_network:
+#    driver: bridge

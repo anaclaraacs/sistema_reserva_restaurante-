@@ -59,19 +59,17 @@
                         
                         <!-- Mesa -->
                         <div class="mb-3">
-                            <label for="mesa" class="form-label">Escolha sua Mesa</label>
+                            <label for="mesa" class="form-label">Escolha sua Mesa (mesa - capacidade)</label>
                             <select class="form-select" id="mesa" name="mesa" required>
                                 <option value="">Selecione uma mesa</option>
-                                <option value="1">Mesa 1</option>
-                                <option value="2">Mesa 2</option>
-                                <option value="3">Mesa 3</option>
-                                <option value="4">Mesa 4</option>
-                                <option value="5">Mesa 5</option>
+                                {% for mesa in mesas %}
+                                    <option value="{{ mesa.id }}">Mesa {{ mesa.numero }} - {{ mesa.capacidade }} pessoas</option>
+                                {% endfor %}
                             </select>
                         </div>
                         
 
-                        <!-- Quantidade de Pessoas -->
+                        <!-- Quantidade de Pessoas
                         <div class="mb-3">
                             <label for="pessoas" class="form-label">Quantidade de Pessoas</label>
                             <input type="number" class="form-control" id="pessoas" name="pessoas" min="1" required>
@@ -82,7 +80,7 @@
                                     {% endfor %}
                                 </div>
                             {% endif %}
-                        </div>
+                        </div> -->
 
                         <!-- Data -->
                         <div class="mb-3">
@@ -112,7 +110,20 @@
 
                         <!-- Botão de Enviar -->
                         <button type="submit" class="btn btn-primary w-100">Reservar</button>
+
+                        <!-- aviso de erros -->
+                        <div class="mt-3">
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-{{ message.tags }}{% endif %}">
+                                        {{ message }}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+
                     </form>
+                   
                 </div>
             </div>
             

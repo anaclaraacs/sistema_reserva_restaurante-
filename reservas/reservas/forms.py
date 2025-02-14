@@ -17,10 +17,15 @@ class Cadastro(forms.ModelForm):
 
     def clean_senha(self):
         senha = self.cleaned_data.get('senha')
+        
+        # Verifica se a senha tem pelo menos 8 caracteres
+        if len(senha) < 8:
+            raise forms.ValidationError('A senha deve ter pelo menos 8 caracteres.')
 
-        # Verifica se tem pelo menos 6 números
-        if len(re.findall(r'\d', senha)) < 6:
-            raise forms.ValidationError('A senha deve conter pelo menos 6 números.')
+
+        # Verifica se tem pelo menos dois números
+        if len(re.findall(r'\d', senha)) < 2:
+            raise forms.ValidationError('A senha deve conter pelo menos dois números.')
 
         # Verifica se tem pelo menos uma letra maiúscula
         if not re.search(r'[A-Z]', senha):

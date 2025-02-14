@@ -5,9 +5,6 @@ from django.urls import reverse
 from .models import Cliente, Reserva, Mesa
 from .forms import Cadastro, Login
 from django.core.exceptions import ValidationError
-
-#kafka
-from django.http import JsonResponse
 from notificador.notificador_produtor import enviar_mensagem
 #---------
 
@@ -97,12 +94,6 @@ def fazer_reserva(request):
             
             reserva.full_clean()  # Executa as validações no modelo
             reserva.save()
-            
-            #kafka-------------------------
-            
-             # Simulação de reserva criada (substitua por lógica real)
-            reserva_id = 123
-            cliente_email = "cliente@example.com"
 
             enviar_mensagem(reserva.mesa, cliente.email)
 

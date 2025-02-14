@@ -28,6 +28,7 @@ class Mesa(models.Model):
     numero = models.IntegerField(unique=True)
     capacidade = models.IntegerField()
     ocupada = models.BooleanField(default=False)
+    status = models.CharField(max_length=20)
 
     def __str__(self):
         return f"Mesa {self.numero} - {self.capacidade} pessoas"
@@ -51,7 +52,6 @@ class Reserva(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='PENDENTE')
     email_cliente = models.EmailField(max_length=255, editable=False) 
     capacidade = models.IntegerField()
-    pessoas = models.IntegerField()
 
     def clean(self):
         # Combinar data e hora apenas para validação

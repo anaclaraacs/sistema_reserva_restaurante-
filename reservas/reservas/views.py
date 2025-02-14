@@ -5,6 +5,10 @@ from django.urls import reverse
 from .models import Cliente, Reserva, Mesa
 from .forms import Cadastro, Login
 from django.core.exceptions import ValidationError
+from django.utils import timezone
+from datetime import datetime
+#from notificador.notificador_produtor import enviar_mensagem
+
 
 def home(request):
     return render(request, 'reservas/home.html') 
@@ -54,6 +58,7 @@ def cadastro(request):
     return render(request, 'reservas/cadastro.html', {'form': form})
 
 def fazer_reserva(request):
+    mesas_disponiveis = Mesa.objects.filter(ocupada=False)  # Só traz mesas livres
     if request.method == 'POST':
         cliente_id = request.session.get('cliente_id')
         if not cliente_id:
@@ -61,20 +66,54 @@ def fazer_reserva(request):
 
         try:
             cliente = Cliente.objects.get(id=cliente_id)
+            cliente.save()
         except Cliente.DoesNotExist:
             return HttpResponse("Cliente não encontrado.")
         
         # Coletar os dados do formulário
         mesa_id = request.POST.get('mesa')
-        pessoas = request.POST.get('pessoas')
         data = request.POST.get('data')
         hora = request.POST.get('hora')
+        
+       # Variáveis para data e hora
+        data_reserva = None
+        hora_reserva = None
+        
+        # Converter data e hora para validação
+        try:
+            data_reserva = datetime.strptime(data, '%Y-%m-%d').date()
+            hora_reserva = int(hora.split(':')[0])  # Pega apenas a hora
+        except ValueError:
+            messages.error(request, "Formato de data ou hora inválido.")
+            return render(request, "reservas/reserva.html", {"mesas": mesas_disponiveis})
+
+        
+        # Validar se a data é anterior ao dia atual
+        if data_reserva < timezone.now().date():
+            messages.error(request, "Não é possível reservar para dias anteriores ao atual.")
+            return render(request, "reservas/reserva.html", {"mesas": mesas_disponiveis})
+        
+        # Validar se o horário está entre 18h e 23h
+        if hora_reserva < 18 or hora_reserva > 23:
+            messages.error(request, "O horário da reserva deve ser entre 18h e 23h.")
+            return render(request, "reservas/reserva.html", {"mesas": mesas_disponiveis})
+
         
         # Obter a mesa selecionada
         try:
             mesa = Mesa.objects.get(id=mesa_id)
         except Mesa.DoesNotExist:
-            return HttpResponse("Mesa não encontrada.")
+            messages.error(request, "Mesa não encontrada")
+            return render(request, "reservas/reserva.html", {"mesas": mesas_disponiveis})
+        
+        #Verificar se a mesa está ocupada
+        if mesa.ocupada == True:
+            messages.error(request, "Esta mesa já está ocupada.")
+            return render(request, "reservas/reserva.html", {"mesas": mesas_disponiveis})
+ 
+        else:
+            mesa.ocupada = True
+            mesa.save()
         
         # Criar a reserva
         reserva = Reserva(
@@ -82,29 +121,58 @@ def fazer_reserva(request):
             mesa=mesa,
             data=data,
             hora=hora,
-            pessoas=pessoas,
             email_cliente=cliente.email,
-            capacidade=5,           
+            capacidade=mesa.capacidade,        
         )
         
         # Validar a reserva
         try:
             reserva.full_clean()  # Executa as validações no modelo
             reserva.save()
+            print(f"Cliente ID: {cliente_id}, Nome: {cliente.nome}, Email: {cliente.email}")
+
+            enviar_mensagem(reserva.mesa, reserva.email_cliente)
+            
             return redirect('perfil')  # Redireciona para o perfil após salvar a reserva
         except ValidationError as e:
             return render(request, 'reservas/perfil.html', {'form': reserva, 'errors': e.message_dict})
     else:
-        return render(request, 'reservas/reserva.html')
+        return render(request, "reservas/reserva.html", {"mesas": mesas_disponiveis})
     
 def excluir_reserva(request):
     if request.method == 'POST':
         numero_mesa = request.POST.get('numero_mesa')
+        
+        cliente_id = request.session.get('cliente_id')  # Obtém o ID do cliente logado
+        if not cliente_id:
+            messages.error(request, "Você precisa estar logado para excluir uma reserva.")
+            return redirect("login")
+
         try:
-            reserva = Reserva.objects.get(mesa=numero_mesa)
+            cliente = Cliente.objects.get(id=cliente_id)  # Obtém o cliente logado
+            mesa = Mesa.objects.get(numero=numero_mesa)
+            reserva = Reserva.objects.get(mesa=mesa, cliente=cliente)  # Busca apenas reservas do cliente logado
+            
             reserva.delete()
-            return HttpResponse("Reserva excluída com sucesso!")
+
+            # Liberar a mesa
+            mesa.ocupada = False
+            mesa.save()
+            
+            messages.success(request, "Reserva excluída com sucesso!")
+
+            # Atualizar a lista de reservas do cliente
+            reservas = Reserva.objects.filter(cliente=cliente)
+            return render(request, "reservas/perfil.html", {"cliente": cliente, "reservas": reservas})
+
+        except Cliente.DoesNotExist:
+            messages.error(request, "Cliente não encontrado.")
+            return redirect("login")
+        except Mesa.DoesNotExist:
+            messages.error(request, "Mesa não encontrada.")
+            return redirect("perfil")
         except Reserva.DoesNotExist:
-            return HttpResponse("Reserva não encontrada para o número da mesa informado.")
-    
-    return redirect('reservas/perfil') 
+            messages.error(request, "Reserva não encontrada para a mesa informada.")
+            return redirect("perfil")
+
+    return redirect('perfil')

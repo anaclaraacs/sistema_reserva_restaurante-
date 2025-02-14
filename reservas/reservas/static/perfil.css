@@ -9,11 +9,8 @@
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f7fa;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
     margin: 0;
+    padding-top: 50px;  /* Ajuste conforme necessário */
 }
 
 .container {
@@ -23,7 +20,9 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 800px;
+    margin: 50px auto 0;  /* Centraliza e ajusta o espaço do topo */
 }
+
 
 h2 {
     text-align: center;
@@ -66,4 +65,9 @@ h2 {
 
 .reservas-table tr:hover {
     background-color: #f1f1f1;
+}
+
+.alert {
+    margin-top: 20px;
+    padding: 10px;
 }

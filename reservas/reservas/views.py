@@ -7,7 +7,7 @@ from .forms import Cadastro, Login
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from datetime import datetime
-#from notificador.notificador_produtor import enviar_mensagem
+from notificador.notificador_produtor import enviar_mensagem
 
 
 def home(request):

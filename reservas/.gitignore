@@ -3,9 +3,6 @@
 *.pyc
 __pycache__/
 
-# Ignorar arquivos de banco de dados do Django
-db.sqlite3
-
 # Ignorar arquivos de ambiente virtual
 venv/
 .env/

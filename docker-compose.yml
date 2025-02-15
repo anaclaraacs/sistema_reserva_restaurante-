@@ -11,7 +11,7 @@ services:
       - app_network
 
   notificador:
-    build: notificador
+    build: ./reservas/notificador
     container_name: notificador
     volumes:
       - ./appdata:/appdata

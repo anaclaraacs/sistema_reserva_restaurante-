@@ -4,6 +4,6 @@ WORKDIR /app
 
 COPY . /app
 
-RUN pip install --no-cache-dir pika
+RUN pip install --no-cache-dir pika python-dotenv
 
 CMD ["python", "notificador_consumidor.py"]

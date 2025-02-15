@@ -1,6 +1,6 @@
 import pika
 
-RABBITMQ_HOST = "rabbitmq"
+RABBITMQ_HOST = "localhost"
 QUEUE_NAME = "reservas"
 
 def enviar_mensagem(reserva_id, cliente_email):
@@ -13,4 +13,4 @@ def enviar_mensagem(reserva_id, cliente_email):
     canal.basic_publish(exchange='', routing_key=QUEUE_NAME, body=mensagem.encode("utf-8"))
     
     conexao.close()
-    print(f"📩 Mensagem enviada para RabbitMQ: {mensagem}")
+    print(f"Mensagem enviada para RabbitMQ: {mensagem}")

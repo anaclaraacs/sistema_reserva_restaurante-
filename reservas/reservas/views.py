@@ -68,7 +68,11 @@ def fazer_reserva(request):
             cliente = Cliente.objects.get(id=cliente_id)
             cliente.save()
         except Cliente.DoesNotExist:
-            return HttpResponse("Cliente não encontrado.")
+            login_url = reverse('login')
+            messages.error(request,f"Cliente não encontrado. Faça login: <a href='{login_url}'>Clique aqui</a>.")
+
+            return render(request, "reservas/reserva.html", {"mesas": mesas_disponiveis})
+
         
         # Coletar os dados do formulário
         mesa_id = request.POST.get('mesa')

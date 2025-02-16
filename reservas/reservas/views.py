@@ -131,7 +131,7 @@ def fazer_reserva(request):
             reserva.save()
             print(f"Cliente ID: {cliente_id}, Nome: {cliente.nome}, Email: {cliente.email}")
 
-            enviar_mensagem(reserva.mesa, reserva.email_cliente)
+            #enviar_mensagem(reserva.mesa, reserva.email_cliente)
             
             return redirect('perfil')  # Redireciona para o perfil após salvar a reserva
         except ValidationError as e:

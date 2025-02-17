@@ -1,34 +1,27 @@
 import pika
+import json
 import logging
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-import logging
-import json
-import os 
-from dotenv import load_dotenv
+import time
 
-load_dotenv()
-
-RABBITMQ_HOST = "localhost"
-QUEUE_NAME = "reservas"
-
+# Configuração de logging
 logging.basicConfig(
-     level=logging.INFO,
-     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
- )
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 logger = logging.getLogger(__name__)
 
-# def callback(ch, method, properties, body):
-#     mensagem = body.decode("utf-8")
-#     logger.info(f"Mensagem recebida: {mensagem}")
-#     # Aqui você pode adicionar a lógica para enviar notificações
+# Configurações do RabbitMQ
+RABBITMQ_HOST = "rabbitmq"  
+QUEUE_NAME = "reservas"
 
-# # Configuração do e-mail
-SMTP_SERVER = "smtp.gmail.com" 
+# Configurações do SMTP
+SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
-EMAIL_REMETENTE =  os.getenv("email")
-EMAIL_SENHA = os.getenv("senha")  
+EMAIL_REMETENTE = "julianaferris2024@gmail.com"  
+EMAIL_SENHA = "aleo urum xomi ipza"  
 
 def enviar_email(email_destinatario, mensagem):
     """Função para enviar um e-mail."""
@@ -37,55 +30,42 @@ def enviar_email(email_destinatario, mensagem):
         msg["From"] = EMAIL_REMETENTE
         msg["To"] = email_destinatario
         msg["Subject"] = "Confirmação de Reserva"
-
         msg.attach(MIMEText(mensagem, "plain"))
 
-        # Conectando ao servidor SMTP
         servidor_smtp = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
         servidor_smtp.starttls()
         servidor_smtp.login(EMAIL_REMETENTE, EMAIL_SENHA)
-
-        # Enviar o e-mail
         servidor_smtp.sendmail(EMAIL_REMETENTE, email_destinatario, msg.as_string())
-
         servidor_smtp.quit()
         logger.info(f"E-mail enviado para {email_destinatario}")
-    
     except Exception as e:
         logger.error(f"Erro ao enviar e-mail: {e}")
 
 def callback(ch, method, properties, body):
     """Função chamada ao receber uma mensagem na fila do RabbitMQ."""
     try:
-        dados = json.loads(body.decode("utf-8"))  # Supondo que a mensagem seja um JSON
+        logger.info(f"Recebido: {body.decode('utf-8')}")
+        dados = json.loads(body.decode("utf-8"))
         email_cliente = dados.get("email_cliente")
-        mesa = dados.get("mesa")
+        mesa_id = dados.get("mesa_id")
 
-        logger.info(f"Mensagem recebida: {dados}")
+        logger.info(f"Processando reserva para o e-mail: {email_cliente}, mesa: {mesa_id}")
 
-        if email_cliente:
-            mensagem_email = f"Olá! Sua reserva para a mesa {mesa} foi confirmada. Obrigado por escolher nosso restaurante!"
+        if email_cliente and mesa_id:
+            mensagem_email = f"Olá! Sua reserva para a mesa {mesa_id} foi confirmada. Obrigado por escolher nosso restaurante!"
             enviar_email(email_cliente, mensagem_email)
-    
     except Exception as e:
-        logger.error(f"Erro no processamento da mensagem: {e}")
+        logger.error(f"Erro ao processar mensagem: {e}")
 
 # Conexão com RabbitMQ
-print(RABBITMQ_HOST)
-
 while True:
     try:
         conexao = pika.BlockingConnection(pika.ConnectionParameters(host=RABBITMQ_HOST))
-        if conexao:
-            break
+        canal = conexao.channel()
+        canal.queue_declare(queue=QUEUE_NAME)
+        logger.info("Conectado ao RabbitMQ com sucesso.")
+        canal.basic_consume(queue=QUEUE_NAME, on_message_callback=callback, auto_ack=True)
+        canal.start_consuming()
     except Exception as e:
-        logger.error(e)
-
-canal = conexao.channel()
-canal.queue_declare(queue=QUEUE_NAME)
-
-logger.info("Consumidor RabbitMQ rodando...")
-canal.basic_consume(queue=QUEUE_NAME, on_message_callback=callback, auto_ack=True)
-
-canal.start_consuming()
-
+        logger.error(f"Erro na conexão com RabbitMQ: {e}. Tentando reconectar em 5 segundos...")
+        time.sleep(5)
